@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans  
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+<bean id="ticket2" class="di.constructor.Ticket">
+
+	<property name="ticket_no" value="9"/>
+	<property name="city" value="bangalore"/>
+	<property name="price" value="1500"/>
+
+</bean>
+
+<bean id="customer" class="di.constructor.Customer">
+
+	<constructor-arg value="123" type="int"></constructor-arg>
+	<constructor-arg value="Ajith" type="String"></constructor-arg>
+
+</bean>
+<bean id="customer1" class="di.constructor.Customer">
+
+	<constructor-arg value="123" type="int"></constructor-arg>
+
+</bean>
+<bean id="customer11" class="di.constructor.Customer">
+
+	<constructor-arg value="Ajith" type="String"></constructor-arg>
+
+</bean>
+<!-- 
+ 
+<bean id="ticket" class="di.constructor.Ticket">
+
+	<constructor-arg value="123" type="int"></constructor-arg>
+	<constructor-arg value="bangalore" type="String"></constructor-arg>
+
+</bean>
+
+<bean id="ticket1" class="di.constructor.Ticket">
+
+	<constructor-arg value="123" type="int"></constructor-arg>
+	<constructor-arg value="bangalore" type="String"></constructor-arg>
+	<constructor-arg value="1500" type="int"></constructor-arg>
+
+</bean>
+
+-->
+
+</beans>
