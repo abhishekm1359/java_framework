@@ -1,0 +1,201 @@
+--------------------------------Message.java-----------------------------------
+package com.durgesh;
+
+import javax.persistence.*;
+
+import org.springframework.data.annotation.Persistent;
+
+@Entity
+public class Message {
+	@Id
+	private int mid;
+	private String message;
+
+	public Message() {
+	}
+
+	public Message(int mid, String message) {
+		super();
+		this.mid = mid;
+		this.message = message;
+	}
+
+	public int getMid() {
+		return mid;
+	}
+
+	public void setMid(int mid) {
+		this.mid = mid;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}
+
+
+------------------------------------MessageRepository.java--------------------------------
+package com.durgesh;
+
+import javax.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@Transactional
+public interface MessageRepository extends PagingAndSortingRepository<Message, Integer>{
+}
+//public interface MessageRepository extends PagingAndSortingRepository<Message, Integer> 
+
+-----------------------------------MessageService.java--------------------------------------
+package com.durgesh;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+
+@Service("MessageService")
+public class MessageService {
+
+	@Autowired
+	MessageRepository ar;
+
+	public void Save(int mid, String message) {
+		Message m = new Message();
+		m.setMid(mid);
+		m.setMessage(message);
+		ar.save(m);
+	
+	}
+	public void Delete(int mid) {
+		Message m = new Message();
+		m.setMid(mid);
+		
+		ar.delete(m);
+	
+	}
+	public void Update(int mid, String message) {
+		Message m = new Message();
+		m.setMid(mid);
+		m.setMessage(message);
+		ar.save(m);
+	
+	}
+	
+
+	public List<Message> getMessages() {
+		List<Message> al = (List<Message>) ar.findAll();
+		
+		
+		return al;
+	}
+}
+
+
+-----------------------------------Message_Main.java---------------------------------
+package com.durgesh;
+
+import java.util.List;
+import java.util.Scanner;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Message_Main {
+
+	public static MessageService get1() {
+		 AnnotationConfigApplicationContext appContext = new AnnotationConfigApplicationContext();
+		appContext.scan("com.durgesh");
+		appContext.refresh();
+		MessageService messageService = (MessageService) appContext.getBean("MessageService");
+		return messageService;
+	}
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		while(true) {
+			System.out.println("1-insert\n 2-update \n 3-delete \n 4-display \n 5-exit \n");
+			int ch= sc.nextInt();
+			if(ch==1) {
+				MessageService messageService=get1();
+				System.out.println("enter the id");
+				int i= sc.nextInt();
+				System.out.println("enter the Name");
+				String i1= sc.next();
+				
+				messageService.Save(i,i1);
+			
+			}
+			else if(ch==2) {
+				MessageService messageService=get1();
+				System.out.println("enter the id");
+				int i= sc.nextInt();
+				System.out.println("enter the Name");
+				String i1= sc.next();
+				
+				messageService.Update(i,i1);
+			}
+			else if(ch==3) {
+				MessageService messageService=get1();
+				System.out.println("enter the id");
+				int i= sc.nextInt();
+				messageService.Delete(i);
+			}
+			else if(ch==4) {
+				MessageService messageService=get1();
+
+				List<Message> al = messageService.getMessages();
+				for (Message m : al) {
+					System.out.println(m.getMid() + " " + m.getMessage());
+				}
+				
+			}
+			else if(ch==5) {
+				break;
+			}
+		}
+		
+		
+		
+	}
+}
+
+
+-------------------------------------AppConfig.java--------------------------------------
+package com.durgesh;
+
+import javax.persistence.EntityManagerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+
+@Configuration
+@EnableJpaRepositories(basePackages = { "com.durgesh" })
+public class AppConfig {
+	
+	@Bean
+	public LocalEntityManagerFactoryBean entityManagerFactory() {
+		LocalEntityManagerFactoryBean factoryBean = new LocalEntityManagerFactoryBean();
+		factoryBean.setPersistenceUnitName("SpringJPAPer");
+
+		return factoryBean;
+	}
+
+	@Bean
+	public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(entityManagerFactory);
+
+		return transactionManager;
+	}
+}
+
