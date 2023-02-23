@@ -1,0 +1,98 @@
+------------------------------Message.java------------------------------
+
+public class Message {
+	
+	int id;
+	String message;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	@Override
+	public String toString() {
+		return "Message [id=" + id + ", message=" + message + "]";
+	}
+	public Message(int id, String message) {
+		super();
+		this.id = id;
+		this.message = message;
+	}
+	
+	
+	
+}
+
+
+------------------------------MessageController.java------------------------
+
+@RestController
+@RequestMapping("/")
+
+public class MessageController {
+
+	LinkedList<Message> ll = new LinkedList<Message>();
+	
+	@GetMapping("/")
+	public Message getMessageId() {
+		Message m1 = null;
+		return  m1;
+	}
+	
+	@RequestMapping(value = "/display/{id}")
+	public Message getMessageId(@PathVariable int id) {
+		
+		Message m1 = null;
+		lp : for(Message m : ll) {
+			if(m.getId()==id) {
+				m1 = m;
+				break lp;
+			}
+		}
+		return m1;
+		
+	}
+	
+	
+	@RequestMapping(value = "/add")
+	public List<Message> add(@RequestParam int id, String message)
+	{
+		Message m = new Message(id,message);
+		ll.add(m);
+		return ll;
+	}
+	
+	
+	@RequestMapping(value="/delete/{id}")
+	public List<Message> delete(@PathVariable int id){
+		Message m1 = null;
+		lp : for(Message m : ll) {
+			if(m.getId()==id) {
+				ll.remove(m);
+				break lp;
+			}
+		}
+		return ll;
+	}
+	
+	@RequestMapping(value="/update/{id}")
+	public Message update(@PathVariable int id, String message) {
+		Message m1 = null;
+		lp : for(Message m : ll) {
+			if(m.getId()==id) {
+				m.setMessage(message);
+				m1 = m;
+				break lp;
+			}
+		}
+		return m1;
+	}
+
+}
