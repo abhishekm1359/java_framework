@@ -1,0 +1,213 @@
+------------------------country--------------------------
+package com.lab10b;
+
+public class Country {
+	int id;
+	String countryName;	
+	long population;
+	
+	public Country() {
+		super();
+	}
+	public Country(int i, String countryName,long population) {
+		super();
+		this.id = i;
+		this.countryName = countryName;
+		this.population=population;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getCountryName() {
+		return countryName;
+	}
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+	public long getPopulation() {
+		return population;
+	}
+	public void setPopulation(long population) {
+		this.population = population;
+	}	
+
+}
+
+----------------------------------------countryController---------------------
+package com.lab10b;
+
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+public class CountryController {
+
+	CountryService countryService = new CountryService();
+
+	@RequestMapping(value = "/countries", method = RequestMethod.GET, headers = "Accept=application/json")
+	public List<Country> getCountries() {
+		List<Country> listOfCountries = countryService.getAllCountries();
+		return listOfCountries;
+	}
+
+	@RequestMapping(value = "/country/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public Country getCountryById(@PathVariable int id) {
+		return countryService.getCountry(id);
+	}
+
+	@RequestMapping(value = "/countries", method = RequestMethod.POST, headers = "Accept=application/json")
+	public Country addCountry(@RequestBody Country country) {
+		return countryService.addCountry(country);
+	}
+
+	@RequestMapping(value = "/countries", method = RequestMethod.PUT, headers = "Accept=application/json")
+	public Country updateCountry(@RequestBody Country country) {
+		return countryService.updateCountry(country);
+
+	}
+
+	@RequestMapping(value = "/country/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	public void deleteCountry(@PathVariable("id") int id) {
+		countryService.deleteCountry(id);
+
+	}	
+}
+
+--------------------------countryService-------------------------
+package com.lab10b;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class CountryService {
+
+	 static HashMap<Integer,Country> countryIdMap=getCountryIdMap();
+
+
+	 public CountryService() {
+	  super();
+
+	  if(countryIdMap==null)
+	  {
+	   countryIdMap=new HashMap<Integer,Country>();
+	  // Creating some objects of Country while initializing
+	   Country indiaCountry=new Country(1, "India",10000);
+	   Country chinaCountry=new Country(4, "China",20000);
+	   Country nepalCountry=new Country(3, "Nepal",8000);
+	   Country bhutanCountry=new Country(2, "Bhutan",7000);
+
+
+	   countryIdMap.put(1,indiaCountry);
+	   countryIdMap.put(4,chinaCountry);
+	   countryIdMap.put(3,nepalCountry);
+	   countryIdMap.put(2,bhutanCountry);
+	  }
+	 }
+
+	 
+	 public List<Country> getAllCountries()
+	 {
+	  List<Country> countries = new ArrayList<Country>(countryIdMap.values());
+	  return countries;
+	 }
+
+	 
+	 public Country getCountry(int id)
+	 {
+	  Country country= countryIdMap.get(id);
+	  return country;
+	 }
+	 
+	 
+	 public Country addCountry(Country country)
+	 {
+	  country.setId(getMaxId()+1);
+	  countryIdMap.put(country.getId(), country);
+	  return country;
+	 }
+	 
+	 
+	 public Country updateCountry(Country country)
+	 {
+	  if(country.getId()<=0)
+	   return null;
+	  countryIdMap.put(country.getId(), country);
+	  return country;
+	 }
+	 
+	 
+	 public void deleteCountry(int id)
+	 {
+	  countryIdMap.remove(id);
+	 }
+
+	 
+	 public static HashMap<Integer, Country> getCountryIdMap() {
+	  return countryIdMap;
+	 }
+	 
+
+	 // Utility method to get max id
+	 public static int getMaxId()
+	 {   int max=0;
+	 for (int id:countryIdMap.keySet()) {  
+	  if(max<=id)
+	   max=id;
+
+	 }  
+	 return max;
+	 }
+}
+
+
+--------------------------wepapp->WEB-INF->spring-servlet.xml---------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans  
+        http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://www.springframework.org/schema/context  
+        http://www.springframework.org/schema/context/spring-context.xsd  
+        http://www.springframework.org/schema/mvc  
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- Provide support for component scanning -->
+	<context:component-scan base-package="com.lab10b" />
+
+	<!--Provide support for conversion, formatting and validation -->
+	<mvc:annotation-driven />
+	<!-- Define Spring MVC view resolver -->
+</beans>  
+
+------------------------------wepapp->WEB-INF->web.xml-----------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>SpringMVC</display-name>
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>  
+

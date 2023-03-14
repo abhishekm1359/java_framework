@@ -1,0 +1,131 @@
+--------------------Marks----------------------
+package prog_6;
+
+public class Marks {
+
+	int M1, M2, M3;
+
+	public int getM1() {
+		return M1;
+	}
+
+	public void setM1(int m1) {
+		M1 = m1;
+	}
+
+	public int getM2() {
+		return M2;
+	}
+
+	public void setM2(int m2) {
+		M2 = m2;
+	}
+
+	public int getM3() {
+		return M3;
+	}
+
+	public void setM3(int m3) {
+		M3 = m3;
+	}
+	
+	public String toString() {
+		return "Marks1 is "+M1+" Marks1 is"+M2+"Marks3 is"+M3;
+	}
+	
+}
+
+--------------------Student-----------------------------
+package prog_6;
+
+public class Student {
+
+	String USN , Name;
+
+	public String getUSN() {
+		return USN;
+	}
+
+	public void setUSN(String uSN) {
+		USN = uSN;
+	}
+
+	public String getName() {
+		return Name;
+	}
+
+	public void setName(String name) {
+		Name = name;
+	}
+	
+	public String toString() {
+		return "USN is"+USN+" Name is "+Name;
+	}
+	
+	
+	
+}
+
+---------------------------------StudentMain----------------------------
+package prog_6;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import java.util.*;
+
+
+public class Student_Main {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+		
+		Student s =(Student)context.getBean(Student.class);
+		System.out.println("Enter USN : ");
+		String usn = sc.next();
+		System.out.println("Enter Name : ");
+		String name = sc.next();
+		s.setUSN(usn);
+		s.setName(name);
+		
+		Marks m =(Marks)context.getBean(Marks.class);
+		System.out.println("Enter Marks 1 : ");
+		int m1 = sc.nextInt();
+		System.out.println("Enter Marks 2 : ");
+		int m2 = sc.nextInt();
+		System.out.println("Enter Marks 3 : ");
+		int m3 = sc.nextInt();
+		m.setM1(m1);
+		m.setM2(m2);
+		m.setM3(m3);
+	
+		System.out.println(s.toString());
+		System.out.println(m.toString());
+		
+	}
+
+}
+
+----------------------------config.java------------------------
+package prog_6;
+
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+
+@Configurable
+
+public class Config {
+
+	@Bean
+	public Student Student_bean() {
+		return new Student();
+	}
+	
+	@Bean
+	public Marks Marks_bean() {
+		return new Marks();
+	}
+	
+}
+

@@ -1,0 +1,219 @@
+-------------------AppConfig.java-------------------
+package com.lab_7;
+
+import javax.persistence.EntityManagerFactory;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+
+@Configuration
+@EnableJpaRepositories(basePackages= {"com.lab_7"})
+public class AppConfig {
+	
+	@Bean
+	public LocalEntityManagerFactoryBean entityManagerFactory() {
+		
+		LocalEntityManagerFactoryBean factoryBean = new LocalEntityManagerFactoryBean();
+		factoryBean.setPersistenceUnitName("lab_7_student");
+		return factoryBean;
+		
+	}
+
+	@Bean
+	public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+		
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(entityManagerFactory);
+		return transactionManager;
+		
+	}
+
+}
+
+-------------------Message.java----------------
+package com.lab_7;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Message")
+public class Message {
+	
+	@Id
+	private int id;
+	private String message;
+	
+	public Message(int id, String message) {
+		super();
+		this.id = id;
+		this.message = message;
+	}
+	
+	public Message() {
+		
+	}
+	
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+}
+
+------------------------------MessageMain.java---------------------------
+package com.lab_7;
+
+import java.util.List;
+import java.util.Scanner;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MessageMain {
+	
+	public static MessageService get1() {
+		 AnnotationConfigApplicationContext appContext = new AnnotationConfigApplicationContext();
+		appContext.scan("com.lab_7");
+		appContext.refresh();
+		MessageService messageService = (MessageService) appContext.getBean("MessageService");
+		return messageService;
+	}
+	
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+	while(true) {
+		System.out.print("1.Insert\n2.Update\n3.Delete\n4.Display");
+		int ch = sc.nextInt();
+		
+		if(ch==1) {
+			MessageService messageService=get1();
+			System.out.print("Enter Message Id");
+			int id = sc.nextInt();
+			System.out.print("Enter Message Content");
+			String mess = sc.next();
+			messageService.save(id, mess);
+		}
+		if(ch==2) {
+			MessageService messageService=get1();
+			System.out.print("Enter Message Id");
+			int id = sc.nextInt();
+			System.out.print("Enter Message Content");
+			String mess = sc.next();
+			messageService.update(id, mess);
+		}
+		if(ch==3) {
+			MessageService messageService=get1();
+			System.out.print("Enter Message Id");
+			int id = sc.nextInt();
+			messageService.delete(id);
+		}
+		if(ch==4) {
+			MessageService messageService=get1();
+			
+			List<Message> al = messageService.getMessages();
+			for (Message m : al) {
+				System.out.println(m.getId() + " " + m.getMessage());
+			}
+			
+		}else {
+			System.out.println("Enter valid Option");
+	}
+		
+		
+		
+		}
+
+}
+}
+
+-------------------------------MessageRepository.java------------------------
+package com.lab_7;
+
+import javax.transaction.Transactional;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@Transactional
+public interface MessageRepository extends PagingAndSortingRepository<Message, Integer>{
+
+}
+
+
+------------------------------MessageService.java------------------------------
+package com.lab_7;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service("MessageService")
+public class MessageService {
+	
+	@Autowired
+	MessageRepository repo;
+	
+	public void save(int id, String message) {
+		Message m = new Message();
+		m.setId(id);
+		m.setMessage(message);
+		repo.save(m);
+	}
+	
+	public void update(int id, String message) {
+		Message m = new Message();
+		m.setId(id);
+		m.setMessage(message);
+		repo.save(m);
+	}
+	
+	public void delete(int id) {
+		Message m = new Message();
+		m.setId(id);
+		repo.delete(m);
+	}
+	
+	public List<Message> getMessages(){
+		List<Message> al = (List<Message>) repo.findAll();
+		return al;
+	}
+
+
+}
+
+
+-------------------src->META-INF->persistance.xml--------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.2" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+<persistence-unit name="lab_7_student" transaction-type="RESOURCE_LOCAL">
+<class>com.lab_7.Message</class>
+<properties>
+<property name="javax.persistence.jdbc.url" value="jdbc:mysql://jdbc:mysql://localhost:3307/lab_7_java"/>
+<property name="javax.persistence.jdbc.user" value="root"/>
+<property name="javax.persistence.jdbc.password" value="root@1234"/>
+<property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+</properties>
+</persistence-unit>
+</persistence>
