@@ -34,8 +34,6 @@ public class Message {
 
 
 ---------------------------messageController.java-----------------------------
-package com.lab10;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,96 +43,69 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/")
-public class messageController {
+public class Main {
+
 	LinkedList<Message> al = new LinkedList<Message>();
 	
-	
 	@GetMapping("/")
-	public Message getMessageById(){
-		
-		Message m1 = null;
-		return m1;
+	public Message getMessageById() {
+		Message mm = null;
+		return mm;
 	}
-	@RequestMapping(value = "/display/{id}")
-    public LinkedList<Message> getMessageById(@PathVariable int id) {
-		Message m1 = null;
-		lp:	for(Message m:al) {
-				if(m.getId()==id) {
-					m1 = m;
-					break lp;
-				}
-			}
-			return al;
-		}
-		
-    
 	
 	@RequestMapping(value = "/add")
 	public LinkedList<Message> add(@RequestParam int id, String message){
-		Message m = new Message(id, message);
+		Message m = new Message(id,message);
 		al.add(m);
 		return al;
 	}
 	
-	@RequestMapping(value = "/addfirst")
-	public LinkedList<Message> addLast(@RequestParam int id, String message){
-		Message m = new Message(id, message);
-		al.addFirst(m);
-		return al;
+	@RequestMapping(value="/update/{id}")
+	public Message update(@PathVariable int id,String message) {
+		Message mm = null;
+		lp : for(Message m : al) {
+			if(m.getId()==id) {
+				m.setMessage(message);
+				mm=m;
+				break lp;
+			}
+		}
+		return mm;
 	}
 	
-
-	
-	@RequestMapping(value = "/removefirst")
-	public Message removeFirst(){
-//		Message m = new Message(id, message);
-		 ;
-		return al.removeFirst() ;
-	}
-	
-	
-	@RequestMapping(value = "/removelast")
-	public Message removeLast(){
-//		Message m = new Message(id, message);
-		 ;
-		return al.removeLast();
-	}
-	
-	@RequestMapping(value = "/delete/{id}")
-	public List<Message> delete(@PathVariable int id){
-		Message m1 = null;
-		for(Message m: al) {
+	@RequestMapping(value="/delete/{id}")
+	public List<Message> delete(@PathVariable int id) {
+		Message mm = null;
+		for(Message m : al) {
 			if(m.getId()==id) {
 				al.remove(m);
 				return al;
 			}
 		}
 		return al;
-	}	
-	
-	
-	@RequestMapping(value = "/display")
-	public List<Message> displayall(){
-			return al;
 	}
 	
+	@RequestMapping(value="/display")
+	public List<Message> display(){
+		return al;
+	}
 	
-	@RequestMapping(value = "/update/{id}")
-	public Message updatebyid(@PathVariable int id, String message){
-		Message m1=null;
-		lp :for(Message m:al) {
+	@RequestMapping(value="/display/{id}")
+	public Message getMessageById(@PathVariable int id){
+		Message mm = null;
+		lp : for(Message m : al) {
 			if(m.getId()==id) {
-				m.setMessage(message);
-				m1=m;
+				mm=m;
 				break lp;
 			}
-		}
-		return m1;
+		}return mm;
 	}
-
+	
+	
+	
+	
 }
 
 ------------------------------wepapp->WEB-INF->spring-servlet.xml-------------------------
